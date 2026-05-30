@@ -123,7 +123,13 @@ export default function CartPage() {
               <span>${totalPrice.toLocaleString('es-AR')}</span>
             </div>
 
-            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block w-full py-4 bg-black text-white text-xs font-medium uppercase tracking-[0.2em] hover:bg-neutral-800 transition text-center">
+            
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setTimeout(() => clearCart(), 100)}
+              className="block w-full py-4 bg-black text-white text-xs font-medium uppercase tracking-[0.2em] hover:bg-neutral-800 transition text-center"
+            >
               Pedir por WhatsApp
             </a>
 
