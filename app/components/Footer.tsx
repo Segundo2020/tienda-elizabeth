@@ -24,7 +24,7 @@ export function Footer() {
 
           <div>
             <h4 className="text-[10px] font-medium uppercase tracking-[0.2em] text-neutral-500 mb-4">Contacto</h4>
-            <a href="https://wa.me/5492966000000" target="_blank" rel="noopener noreferrer" className="text-sm text-neutral-700 hover:text-black transition block">WhatsApp</a>
+            <a href="https://wa.me/5492974145259" target="_blank" rel="noopener noreferrer" className="text-sm text-neutral-700 hover:text-black transition block">WhatsApp</a>
             <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" className="text-sm text-neutral-700 hover:text-black transition block mt-2">Instagram</a>
           </div>
         </div>
