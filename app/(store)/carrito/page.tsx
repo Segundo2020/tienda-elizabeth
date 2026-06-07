@@ -124,6 +124,7 @@ export default function CartPage() {
             </div>
 
             
+            <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
