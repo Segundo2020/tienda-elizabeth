@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { productVariants } from "@/lib/db/schema";
 
@@ -25,26 +25,48 @@ function parseVariantForm(formData: FormData) {
   return { size, color, sku, stock: stockNum };
 }
 
-function friendlyVariantError(err: unknown): string {
-  if (err instanceof Error) {
-    if (err.message.includes("duplicate key")) {
-      if (err.message.includes("sku")) {
-        return "Ese SKU ya está en uso por otra variante.";
-      }
-      return "Ya existe una variante con ese talle y color para este producto.";
-    }
-    return err.message;
-  }
-  return "Error desconocido";
-}
-
 export async function createVariant(productId: number, formData: FormData) {
   let errorMsg: string | null = null;
   try {
     const data = parseVariantForm(formData);
+
+    // Pre-check: ya existe variante con mismo talle+color para este producto
+    const sizeCondition =
+      data.size === null
+        ? isNull(productVariants.size)
+        : eq(productVariants.size, data.size);
+    const colorCondition =
+      data.color === null
+        ? isNull(productVariants.color)
+        : eq(productVariants.color, data.color);
+
+    const existingCombo = await db.query.productVariants.findFirst({
+      where: and(
+        eq(productVariants.productId, productId),
+        sizeCondition,
+        colorCondition
+      ),
+    });
+
+    if (existingCombo) {
+      throw new Error(
+        "Ya existe una variante con ese talle y color para este producto."
+      );
+    }
+
+    // Pre-check: SKU único globalmente
+    if (data.sku) {
+      const existingSku = await db.query.productVariants.findFirst({
+        where: eq(productVariants.sku, data.sku),
+      });
+      if (existingSku) {
+        throw new Error("Ese SKU ya está en uso por otra variante.");
+      }
+    }
+
     await db.insert(productVariants).values({ productId, ...data });
   } catch (err) {
-    errorMsg = friendlyVariantError(err);
+    errorMsg = err instanceof Error ? err.message : "Error desconocido";
   }
 
   if (errorMsg) {
