@@ -50,10 +50,15 @@ function friendlyError(err: unknown): string {
 
 export async function createProduct(formData: FormData) {
   let errorMsg: string | null = null;
+  let newId: number | null = null;
   try {
     const data = parseForm(formData);
     const slug = slugify(data.name);
-    await db.insert(products).values({ ...data, slug });
+    const [inserted] = await db
+      .insert(products)
+      .values({ ...data, slug })
+      .returning({ id: products.id });
+    newId = inserted.id;
   } catch (err) {
     errorMsg = friendlyError(err);
   }
@@ -64,7 +69,7 @@ export async function createProduct(formData: FormData) {
 
   revalidatePath("/admin/productos");
   revalidatePath("/");
-  redirect("/admin/productos");
+  redirect(`/admin/productos/${newId}/editar`);
 }
 
 export async function updateProduct(id: number, formData: FormData) {

@@ -4,13 +4,14 @@ import { db } from "@/lib/db";
 import { categories, products } from "@/lib/db/schema";
 import { ProductForm } from "../../ProductForm";
 import { updateProduct } from "../../actions";
+import { ImageManager } from "./ImageManager";
 
 export default async function EditarProductoPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; imageError?: string }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
@@ -30,7 +31,9 @@ export default async function EditarProductoPage({
   return (
     <div>
       <div className="mb-10">
-        <h1 className="text-3xl font-light tracking-tight text-neutral-900">Editar producto</h1>
+        <h1 className="text-3xl font-light tracking-tight text-neutral-900">
+          Editar producto
+        </h1>
         <p className="text-sm text-neutral-500 mt-1">{product.name}</p>
       </div>
 
@@ -46,6 +49,8 @@ export default async function EditarProductoPage({
         categories={cats}
         submitLabel="Guardar cambios"
       />
+
+      <ImageManager productId={productId} error={sp.imageError} />
     </div>
   );
 }
