@@ -5,13 +5,18 @@ import { categories, products } from "@/lib/db/schema";
 import { ProductForm } from "../../ProductForm";
 import { updateProduct } from "../../actions";
 import { ImageManager } from "./ImageManager";
+import { VariantManager } from "./VariantManager";
 
 export default async function EditarProductoPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ error?: string; imageError?: string }>;
+  searchParams: Promise<{
+    error?: string;
+    imageError?: string;
+    variantError?: string;
+  }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
@@ -51,6 +56,7 @@ export default async function EditarProductoPage({
       />
 
       <ImageManager productId={productId} error={sp.imageError} />
+      <VariantManager productId={productId} error={sp.variantError} />
     </div>
   );
 }
