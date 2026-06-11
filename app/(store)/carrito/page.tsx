@@ -201,6 +201,7 @@ export default function CartPage() {
 
             {state.whatsappUrl && (
               
+              <a
                 href={state.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
