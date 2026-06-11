@@ -1,0 +1,24 @@
+name: Keep Supabase alive
+
+on:
+  schedule:
+    # Cada 15 minutos
+    - cron: '*/15 * * * *'
+  # También permite dispararlo manualmente desde la UI
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: |
+          response=$(curl -s -w "\nHTTP_STATUS:%{http_code}" https://tienda-elizabeth.vercel.app/api/health)
+          status=$(echo "$response" | grep "HTTP_STATUS:" | cut -d: -f2)
+          body=$(echo "$response" | grep -v "HTTP_STATUS:")
+          echo "Status: $status"
+          echo "Body: $body"
+          if [ "$status" != "200" ]; then
+            echo "::error::Health check failed with status $status"
+            exit 1
+          fi
