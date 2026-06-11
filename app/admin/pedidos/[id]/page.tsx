@@ -14,10 +14,13 @@ const STATUS_OPTIONS = [
 
 export default async function PedidoDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
 }) {
   const { id } = await params;
+  const sp = await searchParams;
   const orderId = Number(id);
 
   if (isNaN(orderId)) notFound();
@@ -57,6 +60,12 @@ export default async function PedidoDetailPage({
             : ""}
         </p>
       </div>
+
+      {sp.error && (
+        <div className="mb-6 max-w-3xl px-4 py-3 bg-red-50 border border-red-200 text-sm text-red-700">
+          {sp.error}
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-8 max-w-5xl">
         <div className="col-span-2">
@@ -145,6 +154,9 @@ export default async function PedidoDetailPage({
                 Actualizar
               </button>
             </form>
+            <p className="text-xs text-neutral-500 mt-3 leading-relaxed">
+              Al pasar a Confirmado o Entregado se descuenta el stock automáticamente.
+            </p>
           </div>
         </div>
       </div>
