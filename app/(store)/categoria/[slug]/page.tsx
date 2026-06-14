@@ -1,8 +1,10 @@
 import { db } from '@/lib/db';
-import { products, categories, productImages } from '@/lib/db/schema';
-import { eq, and, sql } from 'drizzle-orm';
+import { categories, products } from '@/lib/db/schema';
+import { eq, and, asc } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import { ProductCard } from '@/app/components/ProductCard';
+
+export const dynamic = 'force-dynamic';
 
 export default async function CategoryPage({
   params,
@@ -19,25 +21,25 @@ export default async function CategoryPage({
     notFound();
   }
 
-  const categoryProducts = await db
-    .select({
-      id: products.id,
-      name: products.name,
-      slug: products.slug,
-      price: products.price,
-      description: products.description,
-      imageUrl: sql<string | null>`(
-        SELECT url FROM ${productImages}
-        WHERE ${productImages.productId} = ${products.id}
-        ORDER BY ${productImages.position} ASC
-        LIMIT 1
-      )`,
-    })
-    .from(products)
-    .where(
-  and(eq(products.categoryId, category.id), eq(products.active, true))
-)
-.orderBy(products.id);
+  const productList = await db.query.products.findMany({
+    where: and(eq(products.categoryId, category.id), eq(products.active, true)),
+    with: {
+      images: {
+        orderBy: (img, { asc }) => [asc(img.position), asc(img.id)],
+        limit: 1,
+      },
+    },
+    orderBy: [asc(products.id)],
+  });
+
+  const categoryProducts = productList.map((p) => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    price: p.price,
+    description: p.description,
+    imageUrl: p.images[0]?.url ?? null,
+  }));
 
   return (
     <>
@@ -52,7 +54,6 @@ export default async function CategoryPage({
           </p>
         </div>
       </section>
-
       <main className="max-w-6xl mx-auto px-6 py-16">
         {categoryProducts.length === 0 ? (
           <div className="text-neutral-500 py-12 text-center text-sm">

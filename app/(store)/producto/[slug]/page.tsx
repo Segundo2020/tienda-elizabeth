@@ -3,8 +3,10 @@ import { products } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { VariantSelector } from './VariantSelector';
+import { ImageGallery } from './ImageGallery';
+
+export const dynamic = 'force-dynamic';
 
 export default async function ProductPage({
   params,
@@ -19,7 +21,7 @@ export default async function ProductPage({
       category: true,
       variants: true,
       images: {
-        orderBy: (img, { asc }) => [asc(img.position)],
+        orderBy: (img, { asc }) => [asc(img.position), asc(img.id)],
       },
     },
   });
@@ -27,8 +29,6 @@ export default async function ProductPage({
   if (!product || !product.active) {
     notFound();
   }
-
-  const mainImage = product.images[0];
 
   return (
     <main className="max-w-6xl mx-auto px-6 py-12">
@@ -48,46 +48,8 @@ export default async function ProductPage({
         )}
         <span className="text-neutral-700">{product.name}</span>
       </nav>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
-        <div className="space-y-4">
-          <div className="aspect-square bg-neutral-100 relative overflow-hidden">
-            {mainImage ? (
-              <Image
-                src={mainImage.url}
-                alt={mainImage.alt ?? product.name}
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover"
-                priority
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-neutral-300 text-sm">
-                Sin imagen
-              </div>
-            )}
-          </div>
-
-          {product.images.length > 1 && (
-            <div className="grid grid-cols-4 gap-2">
-              {product.images.map((img) => (
-                <div
-                  key={img.id}
-                  className="aspect-square bg-neutral-100 relative overflow-hidden"
-                >
-                  <Image
-                    src={img.url}
-                    alt={img.alt ?? product.name}
-                    fill
-                    sizes="100px"
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
+        <ImageGallery images={product.images} productName={product.name} />
         <div>
           {product.category && (
             <div className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] mb-3">
@@ -105,7 +67,6 @@ export default async function ProductPage({
               {product.description}
             </p>
           )}
-
           <VariantSelector
             variants={product.variants}
             product={{

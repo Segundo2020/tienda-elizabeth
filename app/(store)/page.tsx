@@ -1,28 +1,32 @@
 import { db } from '@/lib/db';
-import { products, categories, productImages } from '@/lib/db/schema';
-import { eq, sql } from 'drizzle-orm';
+import { products } from '@/lib/db/schema';
+import { eq, asc } from 'drizzle-orm';
 import { ProductCard } from '@/app/components/ProductCard';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
-  const allProducts = await db
-    .select({
-      id: products.id,
-      name: products.name,
-      slug: products.slug,
-      price: products.price,
-      description: products.description,
-      categoryName: categories.name,
-      imageUrl: sql<string | null>`(
-        SELECT url FROM ${productImages}
-        WHERE ${productImages.productId} = ${products.id}
-        ORDER BY ${productImages.position} ASC
-        LIMIT 1
-      )`,
-    })
-    .from(products)
-    .leftJoin(categories, eq(products.categoryId, categories.id))
-    .where(eq(products.active, true))
-.orderBy(products.id);
+  const productList = await db.query.products.findMany({
+    where: eq(products.active, true),
+    with: {
+      category: true,
+      images: {
+        orderBy: (img, { asc }) => [asc(img.position), asc(img.id)],
+        limit: 1,
+      },
+    },
+    orderBy: [asc(products.id)],
+  });
+
+  const allProducts = productList.map((p) => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    price: p.price,
+    description: p.description,
+    categoryName: p.category?.name ?? null,
+    imageUrl: p.images[0]?.url ?? null,
+  }));
 
   return (
     <>
@@ -36,7 +40,6 @@ export default async function Home() {
           </p>
         </div>
       </section>
-
       <main className="max-w-6xl mx-auto px-6 py-16">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
           {allProducts.map((p) => (
