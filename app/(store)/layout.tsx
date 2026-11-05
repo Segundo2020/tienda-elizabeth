@@ -9,7 +9,7 @@ export default function StoreLayout({
   return (
     <>
       <Header />
-      <main>{children}</main>
+      <main data-store>{children}</main>
       <Footer />
     </>
   );

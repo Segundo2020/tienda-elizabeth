@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "./login/actions";
+import { getSiteSettings } from "@/lib/site-settings";
+import { AdminThemeSync } from "./AdminThemeSync";
 
 export default async function AdminLayout({
   children,
@@ -17,8 +19,11 @@ export default async function AdminLayout({
     return <>{children}</>;
   }
 
+  const settings = await getSiteSettings();
+
   return (
     <div className="min-h-screen flex bg-neutral-50">
+      <AdminThemeSync mode={settings.adminTheme} />
       <aside className="w-64 bg-neutral-900 text-white flex flex-col">
         <div className="p-6 border-b border-neutral-800">
           <h1 className="text-lg font-light tracking-[0.2em]">ELIZABETH</h1>
@@ -51,6 +56,12 @@ export default async function AdminLayout({
             className="block px-4 py-2.5 text-sm hover:bg-neutral-800 transition-colors"
           >
             Pedidos
+          </Link>
+          <Link
+            href="/admin/apariencia"
+            className="block px-4 py-2.5 text-sm hover:bg-neutral-800 transition-colors"
+          >
+            Apariencia
           </Link>
           <div className="border-t border-neutral-800 my-4" />
           <Link

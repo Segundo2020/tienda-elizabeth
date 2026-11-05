@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export function ThemeToggle() {
+  const pathname = usePathname();
   const [theme, setTheme] = useState<"light" | "dark" | null>(null);
 
   useEffect(() => {
@@ -25,7 +27,8 @@ export function ThemeToggle() {
     }
   }
 
-  if (theme === null) return null;
+  // En el admin manda la apariencia configurada en /admin/apariencia
+  if (theme === null || pathname?.startsWith("/admin")) return null;
 
   return (
     <button

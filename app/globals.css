@@ -13,6 +13,10 @@
   --eliz-border: #e8e3de;
   --eliz-card: #ffffff;
   --eliz-success: #2d6a4f;
+  --eliz-on-accent: #ffffff;
+  --eliz-radius: 0px;
+  --font-heading: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-body: var(--font-inter), "Inter", system-ui, sans-serif;
 }
 
 .dark {
@@ -22,6 +26,9 @@
   --eliz-muted: #a3a3a3;
   --eliz-border: #333333;
   --eliz-card: #262626;
+  --eliz-accent: #c9a23f;
+  --eliz-accent-hover: #e0bb5c;
+  --eliz-on-accent: #1a1a1a;
 }
 
 @theme inline {
@@ -42,12 +49,37 @@ html.dark { color-scheme: dark; }
 body {
   background-color: var(--eliz-bg);
   color: var(--eliz-text);
-  font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
 }
 
 .font-serif {
-  font-family: var(--font-playfair), "Playfair Display", "Georgia", serif;
+  font-family: var(--font-heading);
+}
+
+/* ===== Pares tipográficos ===== */
+html[data-font="moderno"] {
+  --font-heading: var(--font-montserrat), "Montserrat", system-ui, sans-serif;
+  --font-body: var(--font-inter), "Inter", system-ui, sans-serif;
+}
+html[data-font="clasico"] {
+  --font-heading: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-body: var(--font-lora), "Lora", Georgia, serif;
+}
+
+/* ===== Texto sobre el color de acento (legible en cualquier tema) ===== */
+.bg-eliz-accent,
+.hover\:bg-eliz-accent:hover {
+  color: var(--eliz-on-accent);
+}
+
+/* ===== Formas: bordes según la apariencia elegida (solo tienda) ===== */
+[data-store] :is(button, input, textarea, select, .bg-eliz-card, a.inline-flex):not(.rounded-full) {
+  border-radius: var(--eliz-radius);
+}
+[data-store] .bg-eliz-card { overflow: hidden; }
+[data-store] :is(.aspect-\[3\/4\], .aspect-square):not(.bg-eliz-card *) {
+  border-radius: var(--eliz-radius);
 }
 
 ::-webkit-scrollbar { width: 6px; }
