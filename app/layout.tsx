@@ -1,22 +1,33 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import Script from "next/script";
+import { Inter, Playfair_Display } from "next/font/google";
+import { ThemeToggle } from "@/app/components/ThemeToggle";
 import "./globals.css";
-import { ThemeToggle } from "./components/ThemeToggle";
 
-const geist = Geist({
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-inter",
+  weight: ["300", "400", "500", "600"],
+  display: "swap",
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Elizabeth | Catálogo",
-  description: "Catálogo de ropa Elizabeth",
+  title: "Elizabeth — Ropa Femenina",
+  description:
+    "Ropa femenina con estilo y calidad. Desde Río Gallegos, Santa Cruz. Atención personalizada por WhatsApp.",
 };
 
 const themeScript = `
 try {
-  const t = localStorage.getItem('theme');
-  const sys = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (t === 'dark' || (!t && sys)) {
+  if (localStorage.getItem('theme') === 'dark') {
     document.documentElement.classList.add('dark');
   }
 } catch (e) {}
@@ -28,9 +39,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" suppressHydrationWarning>
-      <body className={geist.className}>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+    <html
+      lang="es"
+      suppressHydrationWarning
+      className={`${inter.variable} ${playfair.variable}`}
+    >
+      <body>
+        <Script id="theme-init" strategy="beforeInteractive">
+          {themeScript}
+        </Script>
         {children}
         <ThemeToggle />
       </body>

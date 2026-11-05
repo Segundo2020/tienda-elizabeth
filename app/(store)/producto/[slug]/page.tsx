@@ -1,14 +1,14 @@
-import { db } from '@/lib/db';
-import { products } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import { VariantSelector } from './VariantSelector';
-import { ImageGallery } from './ImageGallery';
+export const dynamic = "force-dynamic";
 
-export const dynamic = 'force-dynamic';
+import { db } from "@/lib/db";
+import { products } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { ImageGallery } from "./ImageGallery";
+import { VariantSelector } from "./VariantSelector";
 
-export default async function ProductPage({
+export default async function ProductDetailPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -30,54 +30,64 @@ export default async function ProductPage({
     notFound();
   }
 
+  const galleryImages = product.images.map((img) => ({ id: img.id, url: img.url, alt: img.alt }));
+  const variants = product.variants.map((v) => ({ id: v.id, size: v.size, color: v.color, stock: v.stock }));
+
   return (
-    <main className="max-w-6xl mx-auto px-6 py-12">
-      <nav className="text-xs text-neutral-500 mb-12 flex items-center gap-2 flex-wrap">
-        <Link href="/" className="hover:text-black transition">Inicio</Link>
+    <section className="max-w-[1400px] mx-auto px-5 md:px-8 py-8 md:py-16">
+      <nav className="flex items-center gap-2 text-xs text-eliz-muted mb-8 md:mb-12" aria-label="Ruta">
+        <Link href="/" className="hover:text-eliz-text transition-colors no-underline">Inicio</Link>
         <span>/</span>
         {product.category && (
           <>
-            <Link
-              href={`/categoria/${product.category.slug}`}
-              className="hover:text-black transition"
-            >
+            <Link href={`/categoria/${product.category.slug}`} className="hover:text-eliz-text transition-colors no-underline">
               {product.category.name}
             </Link>
             <span>/</span>
           </>
         )}
-        <span className="text-neutral-700">{product.name}</span>
+        <span className="text-eliz-text font-medium truncate max-w-[200px]">{product.name}</span>
       </nav>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
-        <ImageGallery images={product.images} productName={product.name} />
-        <div>
+
+      <div className="grid md:grid-cols-2 gap-8 md:gap-16">
+        <ImageGallery images={galleryImages} productName={product.name} />
+
+        <div className="md:pt-4">
           {product.category && (
-            <div className="text-[10px] text-neutral-500 uppercase tracking-[0.2em] mb-3">
+            <div className="text-[10px] font-semibold tracking-[0.12em] uppercase text-eliz-accent mb-3">
               {product.category.name}
             </div>
           )}
-          <h1 className="text-3xl md:text-4xl font-light mb-4">
+
+          <h1 className="font-serif text-[28px] md:text-[36px] font-medium leading-[1.2] text-eliz-text mb-4">
             {product.name}
           </h1>
-          <p className="text-2xl font-light mb-8">
-            ${Number(product.price).toLocaleString('es-AR')}
+
+          <p className="text-[22px] md:text-[26px] font-semibold text-eliz-text mb-8">
+            ${Number(product.price).toLocaleString("es-AR")}
           </p>
+
           {product.description && (
-            <p className="text-neutral-600 mb-10 leading-relaxed text-sm">
+            <div className="text-eliz-muted leading-relaxed mb-8 text-sm md:text-base whitespace-pre-line">
               {product.description}
-            </p>
+            </div>
           )}
+
           <VariantSelector
-            variants={product.variants}
-            product={{
-              id: product.id,
-              name: product.name,
-              slug: product.slug,
-              price: product.price,
-            }}
+            productId={product.id}
+            productName={product.name}
+            productSlug={product.slug}
+            price={Number(product.price)}
+            variants={variants}
           />
+
+          <ul className="mt-10 pt-8 border-t border-eliz-border space-y-3 text-sm text-eliz-muted list-none p-0">
+            <li>Envío gratis en Río Gallegos</li>
+            <li>Pedido por WhatsApp con atención personalizada</li>
+            <li>Calidad garantizada en cada prenda</li>
+          </ul>
         </div>
       </div>
-    </main>
+    </section>
   );
 }
