@@ -9,7 +9,7 @@ import { ProductCard } from "@/app/components/ProductCard";
 import { NewsletterForm } from "./NewsletterForm";
 
 const HERO_IMG = "https://images.unsplash.com/photo-1764265148862-7ee72a4fb367?w=1600&q=80&auto=format&fit=crop";
-const NOSOTROS_IMG = "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80";
+const NOSOTROS_IMG = "https://images.unsplash.com/photo-1577373482643-5c7ccf8f0ac9?w=1200&q=80&auto=format&fit=crop";
 
 const marqueeItems = [
   "Envío gratis en Río Gallegos",
