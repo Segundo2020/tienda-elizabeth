@@ -8,7 +8,7 @@ import Image from "next/image";
 import { ProductCard } from "@/app/components/ProductCard";
 import { NewsletterForm } from "./NewsletterForm";
 
-const HERO_IMG = "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1200&q=80";
+const HERO_IMG = "https://images.unsplash.com/hoto-1441986300917-64674bd600d8?w=1600&q=80&auto=format&fit=crop";
 const NOSOTROS_IMG = "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80";
 
 const marqueeItems = [
